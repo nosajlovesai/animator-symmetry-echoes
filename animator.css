@@ -1,196 +1,145 @@
-/* All styling for the Animator app. The .gleam files only attach class names. */
-
-* { margin: 0; padding: 0; box-sizing: border-box; }
-html, body { width: 100%; height: 100%; overflow: hidden; }
-
-/* ── Layout: two columns ─────────────────────────────────────────────────── */
-
-.app {
-  display: flex;
-  width: 100vw;
-  height: 100vh;
-  background: #1a1a2e;
-  color: #d4c5a0;
-  font-family: system-ui, sans-serif;
-  font-size: 14px;
+:root {
+  color-scheme: dark;
+  --bg: #111411; --surface: #1a1e1a; --raised: #242a23;
+  --line: #363d34; --ink: #eff1e8; --soft: #aab2a4; --acid: #d4f787;
+  --mono: "Cascadia Code", Consolas, monospace;
 }
-
-/* Left column: the code editor. */
-.code-col {
-  width: 42%;
-  min-width: 320px;
-  max-width: 720px;
-  flex-shrink: 0;
-  display: flex;
-  flex-direction: column;
-  border-right: 1px solid #3a3a5e;
-  background: #0f0f1e;
-}
-
-/* The code column stays in the DOM when collapsed, so CodeMirror keeps its
-   state; hiding it gives the right column the full width. */
-.app.code-hidden .code-col { display: none; }
-
-/* A small emoji button (the code pane's collapse toggle, and the playback
-   controls once they exist). */
-.icon-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  background: #2a2a4a;
-  color: #d4c5a0;
-  border: 1px solid #4a4a8a;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 14px;
-  line-height: 1;
-  padding: 5px 8px;
-}
-.icon-btn:hover { background: #3a3a5e; }
-
-/* ── Code panel (left column) ───────────────────────────────────────────── */
-
-.code-panel {
-  flex: 1;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-}
-.code-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 10px 14px;
-  background: #1a1a3e;
-  border-bottom: 1px solid #3a3a5e;
-}
-.code-title {
-  color: #e8d8b0;
-  font-family: 'Georgia', serif;
-  font-size: 16px;
-  letter-spacing: 1px;
-}
-
-/* Wrapper holding the editor. */
-.code-editor-wrap {
-  flex: 1;
-  min-height: 0;
-  position: relative;
-  display: flex;
-}
-/* CodeMirror mount node: grows to fill the panel. */
-.code-editor {
-  flex: 1;
-  min-height: 0;
-  display: flex;
-  overflow: hidden;
-  background: #0d0d1a;
-}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 14px/1.45 "Segoe UI", sans-serif; }
+button, select, input { font: inherit; }
+button, select { cursor: pointer; }
+button, select, textarea { color: inherit; }
+button:focus-visible, select:focus-visible, input:focus-visible, summary:focus-visible { outline: 2px solid var(--acid); outline-offset: 3px; }
+button { transition: background-color .15s, border-color .15s; }
+button:disabled { opacity: .4; cursor: default; }
+h1, h2 { margin: 0; line-height: 1.15; font-weight: 600; letter-spacing: -.045em; }
+.mast { display: flex; justify-content: space-between; align-items: center; gap: 20px; min-height: 74px; padding: 12px clamp(16px, 3vw, 64px); border-bottom: 1px solid var(--line); }
+.brand, .actions, .stage-actions, .gallery-heading, .ink-row, .swatches, .range-label { display: flex; align-items: center; }
+.brand { gap: 12px; }
+.brand h1 { font-size: 25px; letter-spacing: -.06em; }
+.mark { position: relative; width: 30px; height: 32px; flex-shrink: 0; }
+.mark::before, .mark::after { content: ""; position: absolute; width: 16px; height: 23px; border: 2px solid var(--acid); transform: skewY(-26deg); }
+.mark::before { left: 1px; top: 6px; }
+.mark::after { left: 10px; top: 1px; background: #d4f78726; }
+.descriptor { border-left: 1px solid var(--line); padding-left: 16px; margin-left: 4px; color: var(--soft); font-size: 13px; }
+.actions, .stage-actions { gap: 10px; }
+button, select { border-radius: 6px; }
+select, .secondary, .toggle, .icon-btn, .replay { background: var(--raised); border: 1px solid #424a3d; padding: 6px 11px; }
+select { max-width: 100%; padding-right: 7px; }
+.actions select { width: clamp(115px, 13vw, 200px); }
+.actions button, .actions select { height: 37px; font-weight: 550; font-size: 13px; }
+.export { border: 1px solid var(--acid); background: var(--acid); color: #1c2615; padding: 7px 16px; font-weight: 650; }
+.export:hover { background: #e2ffab; }
+.secondary:hover, .icon-btn:hover, .toggle:hover, .replay:hover, select:hover { background: #343b30; }
+.shell { max-width: 1740px; margin: auto; padding: clamp(16px,2.1vw,36px) clamp(16px,3vw,64px) 28px; }
+.studio { display: grid; grid-template-columns: minmax(0,1.92fr) minmax(300px,1fr); gap: 18px; }
+.stage, .code-col, .appearance { min-width: 0; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; background: var(--surface); }
+.stage { display: flex; flex-direction: column; }
+.stage-head { padding: 18px 22px; display: flex; align-items: center; justify-content: space-between; gap: 14px; }
+.stage-head h2 { font-size: clamp(22px,2.2vw,34px); margin-top: 3px; overflow-wrap: anywhere; }
+.eyebrow { color: #bdc7b5; font: 10px var(--mono); text-transform: uppercase; letter-spacing: .14em; }
+.eyebrow::before { content: ""; display: inline-block; width: 6px; height: 6px; background: var(--acid); border-radius: 50%; margin-right: 7px; vertical-align: 1px; }
+.path-count, #timecode, .number { font: 12px var(--mono); color: var(--soft); white-space: nowrap; }
+.toggle, .icon-btn { font-size: 12px; }
+.toggle[aria-pressed="true"] { border-color: #637947; background: #2c3726; color: var(--acid); }
+.canvas-area { position: relative; display: grid; place-items: center; height: clamp(305px, 43vh, 560px); background-color: #171b19; box-shadow: inset 0 0 0 1px #ffffff06; }
+.canvas-area.grid { background-image: radial-gradient(#5661549c .8px, transparent .9px); background-size: 18px 18px; background-position: center; }
+.canvas-area::before, .canvas-area::after { content: ""; position: absolute; pointer-events: none; width: 12px; height: 12px; border-color: #99a38c; border-style: solid; }
+.canvas-area::before { left: 15px; top: 15px; border-width: 1px 0 0 1px; }
+.canvas-area::after { right: 15px; bottom: 15px; border-width: 0 1px 1px 0; }
+.canvas { display: block; width: min(100%, clamp(305px,43vh,560px)); aspect-ratio: 1; height: auto; }
+.transport { padding: 14px 22px 18px; border-top: 1px solid var(--line); }
+.timeline { display: flex; align-items: center; gap: 12px; padding-bottom: 13px; border-bottom: 1px solid var(--line); }
+.timeline input { flex: 1; width: 0; }
+.replay { background: #dce4cf; border-color: transparent; color: #1b2418; font-weight: 600; }
+.replay:hover { background: #ebf4dd; }
+.sliders, .echo-controls { display: grid; grid-template-columns: 1fr 1fr; gap: 26px; }
+.sliders { padding-top: 13px; }
+.slider, .echo-controls label { display: grid; gap: 6px; font-size: 12px; }
+.range-label, .ink-row { justify-content: space-between; gap: 8px; }
+input[type=range] { width: 100%; margin: 0; accent-color: var(--acid); height: 18px; cursor: pointer; }
+.inspector { display: flex; flex-direction: column; gap: 14px; min-width: 0; min-height: 0; }
+.code-col, .code-panel { display: flex; flex-direction: column; min-height: 0; }
+.code-col { flex: 1; position: relative; }
+.code-panel { position: absolute; inset: 0; }
+.code-col:has(.feedback:not(:empty)) .code-panel { position: relative; height: 0; flex: 1; }
+.code-header { padding: 13px 17px; border-bottom: 1px solid var(--line); display: flex; align-items: center; justify-content: space-between; }
+.code-title { font-size: 14px; font-weight: 600; }
+.code-title::before { content: "</>"; color: var(--acid); font: 13px var(--mono); margin-right: 9px; }
+.code-editor-wrap, .code-editor { flex: 1; display: flex; min-width: 0; min-height: 0; overflow: hidden; }
 .code-editor .cm-editor { width: 100%; height: 100%; }
-
-/* Collapsible reference of the built-ins available to draw functions. */
-.reference {
-  margin: 8px 14px 0;
-  border: 1px solid #3a3a5e;
-  border-radius: 4px;
-  background: #0d0d1a;
-  overflow: hidden;
-}
-.reference-summary {
-  padding: 6px 12px;
-  cursor: pointer;
-  color: #b8a888;
-  font-family: monospace;
-  font-size: 12px;
-  user-select: none;
-}
-.reference-summary:hover { color: #e8d8b0; }
-.reference-body {
-  padding: 4px 12px 10px;
-  border-top: 1px solid #3a3a5e;
-}
+.plain-editor { width: 100%; resize: none; padding: 16px; border: none; background: #191d1a; font: 13px/1.6 var(--mono); }
+.reference { border-top: 1px solid var(--line); max-height: 55%; overflow: auto; }
+.reference-summary { cursor: pointer; font-size: 12px; color: var(--soft); padding: 9px 16px; }
+.reference-body { padding: 0 16px 12px; }
 .reference-group { margin-top: 8px; }
-.reference-group-title {
-  color: #8a8aca;
-  font-family: monospace;
-  font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  margin-bottom: 4px;
-}
-.reference-row {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  gap: 4px 10px;
-  padding: 1px 0;
-}
-.reference-sig {
-  color: #89ddff;
-  font-family: monospace;
-  font-size: 12px;
-  white-space: pre;
-}
-.reference-desc { color: #6a7a8a; font-size: 11px; }
-
-/* ── Animation area (right column) ──────────────────────────────────────── */
-
-.canvas-area {
-  flex: 1;
-  min-width: 0;
-  overflow: hidden;
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #0a0a14;
-  container-type: size;
-}
-
-/* The interpreter's List(Path) (or its error), shown as text before the
-   animation pane is built. */
-.output {
-  align-self: stretch;
-  margin: 0;
-  padding: 16px;
-  overflow: auto;
-  font-family: ui-monospace, "SF Mono", Menlo, monospace;
-  font-size: 13px;
-  line-height: 1.5;
-  color: #cfe3ff;
-  white-space: pre-wrap;
-  word-break: break-word;
-}
-/* Leave room for the reveal button, which only overlays this pane while the
-   code column is hidden. */
-.app.code-hidden .output { padding-top: 48px; }
-
-/* Button that reveals the code column again when it is hidden. */
-.reveal-code {
-  position: absolute;
-  top: 12px;
-  left: 12px;
-  z-index: 10;
-}
-
-/* A centred square that fits the (possibly non-square) animation area. Give your
-   <canvas> this class, so that drawings aren't stretched. */
-.canvas {
-  width: min(100cqw, 100cqh);
-  height: min(100cqw, 100cqh);
-}
-
-.workspace { flex: 1; min-width: 0; display: flex; flex-direction: column; }
-.toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; padding: 12px 16px; background: #171727; border-bottom: 1px solid #39394e; }
-.toolbar label { display: grid; gap: 5px; font-size: 12px; font-variant-numeric: tabular-nums; }
-.toolbar select { color-scheme: dark; padding: 4px; max-width: 15rem; }
-.slider input { width: 105px; accent-color: #a6e6d8; }
-.feedback { color: #ffc6ad; background: #2d2029; white-space: pre-wrap; max-height: 24vh; overflow: auto; }
+.reference-group-title { font-weight: 600; }
+.reference-row { display: grid; padding: 4px 0; gap: 2px; }
+.reference-sig { color: var(--acid); overflow-wrap: anywhere; }
+.reference-desc { color: var(--soft); font-size: 11px; }
+.appearance { padding: 14px 17px; }
+.appearance h2 { font-size: 16px; }
+.ink-row { padding: 12px 0; font-size: 12px; }
+.swatches { gap: 8px; }
+.swatch { width: 22px; height: 22px; border-radius: 50%; border: 3px solid var(--surface); background: var(--ink); outline: 1px solid transparent; }
+.swatch[aria-pressed=true] { outline-color: var(--ink); }
+.echo-controls { align-items: center; gap: 20px; border-top: 1px solid var(--line); padding-top: 10px; }
+.feedback { background: #302621; color: #ffceb4; max-height: 6rem; overflow: auto; white-space: pre-wrap; }
 .feedback:not(:empty) { padding: 8px 14px; }
+.focused { grid-template-columns: minmax(0,1fr); }
+.focused .code-col { display: none; }
+.focused .appearance { display: flex; align-items: center; gap: 30px; flex-wrap: wrap; }
+.focused .ink-row { gap: 18px; }
+.focused .echo-controls { border: 0; padding: 0; }
+.gallery { margin-top: 24px; }
+.gallery-heading { gap: 12px; margin-bottom: 12px; }
+.gallery-heading h2 { font-size: 20px; }
+.gallery-heading span { color: var(--soft); font-size: 12px; }
+.cards { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 12px; }
+.card { display: flex; align-items: center; gap: 12px; min-width: 0; background: #1c211d; border: 1px solid var(--line); border-radius: 9px; text-align: left; padding: 7px 12px; }
+.card:hover { background: #293027; border-color: #6e7c60; }
+.card[aria-pressed=true] { background: #283122; border-color: #8ea767; }
+.thumbnail { width: clamp(50px,5.8vw,90px); aspect-ratio: 1; object-fit: contain; }
+.caption { min-width: 0; display: grid; gap: 2px; }
+.caption strong { font-size: 14px; font-weight: 600; }
+.caption small { color: var(--soft); font-size: 12px; }
+@media (max-width: 950px) {
+  .studio { gap: 12px; grid-template-columns: minmax(0,1.5fr) minmax(260px,1fr); }
+  .focused { grid-template-columns: 1fr; }
+  .descriptor { display: none; }
+  .cards { grid-template-columns: repeat(2,minmax(0,1fr)); }
+  .stage-head, .transport { padding-left: 14px; padding-right: 14px; }
+  .timeline { gap: 7px; }
+}
 @media (max-width: 680px) {
-  .app { flex-direction: column; height: 100dvh; }
-  .code-col { width: 100%; min-width: 0; max-width: none; height: 38%; }
-  .workspace { min-height: 0; }
+  .mast { flex-wrap: wrap; gap: 13px; padding: 16px; }
+  .brand { width: 100%; }
+  .descriptor { display: inline; }
+  .actions { width: 100%; gap: 7px; }
+  .picker { flex: 1; min-width: 0; }
+  .actions select { width: 100%; }
+  .actions button { padding-inline: 9px; }
+  .shell { padding: 12px; }
+  .studio { grid-template-columns: 1fr; }
+  .code-col { flex: none; height: 275px; }
+  .canvas-area { height: min(100vw - 26px, 370px); }
+  .canvas { width: min(100%, 370px); }
+  .stage-head { padding-block: 13px; }
+  .cards { gap: 8px; }
+  .card { padding: 6px; gap: 5px; }
+  .thumbnail { width: 40px; }
+  .caption strong { font-size: 12px; }
+  .caption small { font-size: 10px; }
+  .sliders { gap: 14px; }
+}
+@media (prefers-reduced-motion: reduce) { button { transition: none; } }
+.play-toggle { width: 34px; height: 32px; border: 0; background: var(--acid); color: #1b2418; display: grid; place-items: center; flex-shrink: 0; }
+.play-toggle::before { content: ""; border-left: 9px solid currentColor; border-block: 6px solid transparent; margin-left: 2px; }
+.play-toggle[aria-label="Pause"]::before { width: 4px; height: 12px; border: 0; border-inline: 3px solid; box-sizing: content-box; margin: 0; }
+.replay { background: transparent; color: var(--ink); border-color: var(--line); }
+.replay:hover { background: var(--raised); }
+@media (max-width: 460px) {
+  .timeline { gap: 6px; }
+  .timeline .toggle, .replay { padding-inline: 7px; }
+  #timecode { font-size: 10px; }
 }
